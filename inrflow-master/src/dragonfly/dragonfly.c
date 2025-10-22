@@ -300,30 +300,30 @@ long init_topo_dragonfly(long np, long *par) {
     sprintf(filename_params,"p%ld_a%ld_h%ld",param_p,param_a,param_h);
 
     switch(routing) {
-    case DRAGONFLY_MINIMUM:
-        sprintf(routing_token,"min");
-        break;
-    case DRAGONFLY_VALIANT:
-        sprintf(routing_token,"valiant");
-        break;
-    case DRAGONFLY_QUICK_VALIANT_PRIVATE:
-        sprintf(routing_token,"quick-valiant-private");
-        break;
-    case DRAGONFLY_QUICK_VALIANT_QUASIPRIVATE:
-        sprintf(routing_token,"quick-valiant-quasiprivate");
-        break;
-    case DRAGONFLY_QUICK_VALIANT_LOCAL:
-        sprintf(routing_token,"quick-valiant-local");
-        break;
-    case DRAGONFLY_QUICK_VALIANT_REMOTE:
-        sprintf(routing_token,"quick-valiant-remote");
-        break;
-    case DRAGONFLY_QUICK_VALIANT_DUAL:
-        sprintf(routing_token,"quick-valiant-dual");
-        break;
-    default:
-        printf("Not a Dragonfly-compatible routing!");
-        exit(-1);
+	    case DRAGONFLY_MINIMUM:
+		sprintf(routing_token,"min");
+		break;
+	    case DRAGONFLY_VALIANT:
+		sprintf(routing_token,"valiant");
+		break;
+	    case DRAGONFLY_QUICK_VALIANT_PRIVATE:
+		sprintf(routing_token,"quick-valiant-private");
+		break;
+	    case DRAGONFLY_QUICK_VALIANT_QUASIPRIVATE:
+		sprintf(routing_token,"quick-valiant-quasiprivate");
+		break;
+	    case DRAGONFLY_QUICK_VALIANT_LOCAL:
+		sprintf(routing_token,"quick-valiant-local");
+		break;
+	    case DRAGONFLY_QUICK_VALIANT_REMOTE:
+		sprintf(routing_token,"quick-valiant-remote");
+		break;
+	    case DRAGONFLY_QUICK_VALIANT_DUAL:
+		sprintf(routing_token,"quick-valiant-dual");
+		break;
+	    default:
+		printf("Not a Dragonfly-compatible routing!");
+		exit(-1);
 }
 
     //
