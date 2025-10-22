@@ -1,0 +1,13 @@
+insee
+*.o
+*.swp
+*.hst
+*.map
+*.mon
+*.res
+*.sh
+*.depend
+*.stackdump
+*.tgz
+*.layout
+*.trc
