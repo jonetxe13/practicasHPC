@@ -522,51 +522,42 @@ long init_routing_dragonfly(long src, long dst) {
         if (routing == DRAGONFLY_VALIANT) {
             proxy_grp = rand() % grps;
         } 
-        else if (routing == DRAGONFLY_QUICK_VALIANT_PRIVATE) {
-            // El proxy es privado para cada source
-            long r0 = (src * param_h) / param_p;  // primer proxy posible
-            long r1 = ((src + 1) * param_h) / param_p;  // último proxy posible
-            long rp;
+        else if (routing == DRAGONFLY_QUICK_VALIANT_PRIVATE) {// the proxy is private for each source. If param_p == param_h each endpoint has a dedicated uplink/proxy
+            long r0 = (src * param_h) / param_p;  // first possble proxy 
+            long r1 = ((src + 1) * param_h) / param_p;  // last possble proxy
+            long rp; //choose a proxy (at random if more than 1 suitable)
             
-            if (r1 - r0 < 2) // solo 1 proxy posible
+            if (r1 - r0 < 2) // only 1 possible proxy; choose at random
                 rp = r0 % param_h;
-            else // más de 1 proxy posible; elegir al azar
+            else // more than 1 possible proxy; choose at random
                 rp = (r0 + (rand() % (r1 - r0))) % param_h;
             
             proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + rp].neighbour.node) - servers) / param_a;
         }
-        else if (routing == DRAGONFLY_QUICK_VALIANT_QUASIPRIVATE) {
-            // El proxy es quasi-privado
-            long r0 = (src * param_h) / param_p;
-            long r2 = ((src + 2) * param_h) / param_p;
-            long rp;
+        else if (routing == DRAGONFLY_QUICK_VALIANT_QUASIPRIVATE) {// the proxy is quasi private; the first half of uplinks is shared with the previous processor, the second half is shared with the next.
+            long r0 = (src * param_h) / param_p;// first possible proxy
+            long r2 = ((src + 2) * param_h) / param_p; // last possible proxy
+            long rp;//choose a proxy (at random if more than 1 suitable)
             
-            if (r2 - r0 < 2)
+            if (r2 - r0 < 2)// only 1 possible proxy; choose r0
                 rp = r0 % param_h;
-            else
+            else// more than 1 possible proxy; choose at random
                 rp = (r0 + (rand() % (r2 - r0))) % param_h;
             
             proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + rp].neighbour.node) - servers) / param_a;
         }
         else if (routing == DRAGONFLY_QUICK_VALIANT_LOCAL) {
-            // Elegir un vecino del grupo local al azar
-            proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;
+            proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;// pick a neighbor to the local group at random
         }
         else if (routing == DRAGONFLY_QUICK_VALIANT_REMOTE) {
             // Elegir un vecino del grupo remoto al azar
-            proxy_grp = ((network[servers + (dst/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;
+            proxy_grp = ((network[servers + (dst/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;// pick a neighbor to the remote group at random
         }
         else if (routing == DRAGONFLY_QUICK_VALIANT_DUAL) {
-            if (rand() % 2) // elegir vecino local o remoto al azar
-                proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;
+            if (rand() % 2) // pick a neighbor to either the local or the remote group at random
+                proxy_grp = ((network[servers + (src/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;// pick a local neighbor
             else
-                proxy_grp = ((network[servers + (dst/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;
-        }
-        else if (routing == DRAGONFLY_VALIANT) {
-            // Versión original de INRFLOW
-            while ((proxy_grp == src_grp) || (proxy_grp == dst_grp)) {
-                proxy_grp = rand() % grps;
-            }
+                proxy_grp = ((network[servers + (dst/param_p)].port[param_p + param_a - 1 + (rand() % param_h)].neighbour.node) - servers) / param_a;// pick a remote neighbor
         }
     }
     
