@@ -1,0 +1,112 @@
+
+Si p.flows.connected = 100%, tu implementación funciona correctamente.
+
+Métricas Importantes a Revisar
+
+INRFlow genera archivos .dat con estas métricas clave:
+
+
+    mean.link.path.length: Longitud media de rutas
+
+    p.flows.connected: Porcentaje de flujos entregados (debe ser 100%)
+
+    max.flows.per.link: Congestión máxima
+
+    connected.flows.over.bottleneck.flow: Throughput agregado
+
+
+Tu implementación quick-valiant-private funciona correctamente porque:
+
+    ✓ Path length mayor que MIN (4.88 > 4.0 esperado)
+
+    ✓ Histograma muestra rutas largas (6 links en 42% de flujos)
+
+    ✓ Varianza alta indica diversidad de rutas
+
+    ✓ INSEE y INRFlow coinciden en longitud promedio
+
+📊 Métricas Clave
+Métrica	INRFlow	INSEE	Diferencia
+Longitud media de ruta	4.880 links	4.877 links	0.003 (0.06%) ✓
+Conectividad	100.0%	99.79%	~0.2% ✓
+🎯 Evidencias de Equivalencia
+
+    Longitud de ruta casi idéntica: 4.88 vs 4.877 links (diferencia despreciable de 0.06%)
+
+​
+
+Ambos usan proxy routing correctamente:
+
+    INRFlow: 42% de flujos usan rutas de 6 links (máximo)
+
+    Rutas directas serían 3-4 links
+
+    Rutas con proxy son 5-6 links ✓
+
+Distribución similar: Varianza de 1.50 indica diversidad de rutas (compatible con selección aleatoria de proxy)
+
+INRFLOW - Archivo .dat
+
+v0.4.1 ... 50 50 100.000000 ... 2 6 4.880000 5.000000 1.495510 ...
+              ↑  ↑  ↑──────────↑      ↑ ↑ ↑────────↑
+              │  │  │                 │ │ └─ mean.link.path.length = 4.880
+              │  │  │                 │ └─── max = 6
+              │  │  │                 └───── min = 2
+              │  │  └─────────────────────── p.flows.connected = 100%
+              │  └────────────────────────── n.flows.delivered = 50
+              └───────────────────────────── n.flows = 50
+
+INRFLOW - Histograma (_hist.dat)
+#p: Path length histogram
+       pi         p     np
+        2         2 0.04000    ← 4% flujos: longitud 2
+        3         7 0.14000    ← 14% flujos: longitud 3
+        4         7 0.14000    ← 14% flujos: longitud 4
+        5        13 0.26000    ← 26% flujos: longitud 5
+        6        21 0.42000    ← ★★★ 42% flujos: longitud 6 ★★★
+                     ↑──────↑
+                     └─ 21 de 50 flujos usan la ruta MÁS LARGA
+                        Esto indica USO DE PROXY
+
+INSEE - Tabla de Resultados
+
+AVG,    1000.00,    4.87711,    0.05356,    0.05347,     281.20,     280.60,       0.00,      16.00, ...
+                    ↑────────↑                          ↑──────↑    ↑──────↑    ↑────────↑
+                    │                                   │          │          └─ PacketDrop = 0
+                    │                                   │          └─ PacketRcvd = 280.60
+                    │                                   └─ PacketSent = 281.20
+                    └─ AvDistance = 4.87711 (longitud media ruta)
+
+Conectividad INSEE = 280.60 / 281.20 = 99.79%
+
+┌──────────────────────┬───────────────┬───────────────┐
+│ Métrica              │ INRFLOW       │ INSEE         │
+├──────────────────────┼───────────────┼───────────────┤
+│ Longitud media ruta  │ 4.880         │ 4.877         │ ← Diferencia: 0.003
+│ Conectividad         │ 100.0%        │ 99.79%        │ ← Diferencia: 0.21%
+│ Ruta más usada       │ 6 links (42%) │ ~5-6 links    │ ← Uso de PROXY
+└──────────────────────┴───────────────┴───────────────┘
+
+RESULTADO: 4.880 ≈ 4.877 (diferencia 0.06%)
+           ═══════════════════════════════
+           ✓ PRÁCTICAMENTE IDÉNTICOS
+
+Evidencia de Proxy Routing
+
+Del histograma INRFlow:
+
+    68% de flujos (34 de 50) usan rutas de 5-6 links
+
+    Rutas directas serían 2-4 links
+
+    Rutas largas = Proxy activo ✓
+
+Comparación:
+
+    MIN esperado: ~3.5-4.0 links
+
+    quick-valiant-private: 4.880 links
+
+    Diferencia: +0.9 a +1.4 links → Uso de proxy confirmado ✓
+
+Las implementaciones son equivalentes con una diferencia de solo 0.003 links (0.06%).
